@@ -1,0 +1,326 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jollfi Gaming API Documentation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+      .container {
+        max-width: 900px;
+        margin: auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1,
+      h2,
+      h3 {
+        color: #0056b3;
+      }
+      pre {
+        background: #eee;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        white-space: pre-wrap; /* Ensures that long lines wrap */
+        word-wrap: break-word; /* Ensures that long words break */
+      }
+      code {
+        font-family: "Courier New", Courier, monospace;
+        background-color: #e9e9e9;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+      .endpoint-section {
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+      }
+      .endpoint-section:last-child {
+        border-bottom: none;
+      }
+      .http-method {
+        font-weight: bold;
+        color: #28a745; /* Green for GET, change as needed */
+      }
+      .http-method.post {
+        color: #ffc107; /* Yellow for POST */
+      }
+      .error-list {
+        margin-top: 10px;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Jollfi Gaming API Documentation</h1>
+      <p>
+        The Jollfi Gaming API provides endpoints for staking and managing games
+        on the Sui blockchain. It supports optional API key authentication and
+        is designed for public access.
+      </p>
+
+      ---
+
+      <h2>Base Information</h2>
+      <ul>
+        <li>
+          <strong>Base URL:</strong> <code>https://api.jollfi.com</code> (or
+          <code>http://localhost:8080</code> for local development)
+        </li>
+        <li>
+          <strong>Authentication:</strong> Optional API key via
+          <code>X-API-Key</code> header or <code>api_key</code> query parameter
+          (<code>public-jollfi-api-key-2025</code>)
+        </li>
+        <li><strong>Rate Limit:</strong> 100 requests per minute per IP</li>
+        <li>
+          <strong>Content-Type:</strong> <code>application/json</code> for POST
+          requests
+        </li>
+      </ul>
+
+      ---
+
+      <h2>Endpoints</h2>
+
+      <div class="endpoint-section">
+        <h3><span class="http-method">GET</span> /health</h3>
+        <p>Checks the API's health status.</p>
+        <h4>Request:</h4>
+        <pre><code>curl https://api.jollfi.com/health</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "status": "healthy",
+    "service": "jollfi-gaming-api",
+    "timestamp": 1622134567,
+    "version": "1.0.0"
+}</code></pre>
+      </div>
+
+      <div class="endpoint-section">
+        <h3><span class="http-method">GET</span> /api/v1/info</h3>
+        <p>Provides API information and available endpoints.</p>
+        <h4>Request:</h4>
+        <pre><code>curl https://api.jollfi.com/api/v1/info</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "info": {
+        "service": "Jollfi Gaming API",
+        "version": "1.0.0",
+        "environment": "development",
+        "network": "https://fullnode.testnet.sui.io:443",
+        "module": "jollfi_wallet",
+        "endpoints": {
+            "stake": "POST /api/v1/games/stake",
+            "pay_winner": "POST /api/v1/games/pay_winner",
+            "stake_history": "GET /api/v1/games/stakes/:address",
+            "game_history": "GET /api/v1/games/history/:address",
+            "stats": "GET /api/v1/games/stats",
+            "health": "GET /health"
+        }
+    }
+}</code></pre>
+      </div>
+
+      <div class="endpoint-section">
+        <h3><span class="http-method">GET</span> /api/v1/status</h3>
+        <p>Returns API status and uptime.</p>
+        <h4>Request:</h4>
+        <pre><code>curl https://api.jollfi.com/api/v1/status</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "service": "jollfi-gaming-api",
+    "version": "1.0.0",
+    "environment": "development",
+    "timestamp": 1622134567,
+    "uptime": "1h2m3s"
+}</code></pre>
+      </div>
+
+      <div class="endpoint-section">
+        <h3><span class="http-method post">POST</span> /api/v1/games/stake</h3>
+        <p>Creates a stake on the Sui blockchain.</p>
+        <h4>Request with API Key:</h4>
+        <pre><code>curl -X POST -H "Content-Type: application/json" \
+-H "X-API-Key: public-jollfi-api-key-2025" \
+-d '{
+"requester_coin_id": "0x123",
+"accepter_coin_id": "0x456",
+"requester_address": "0x1234567890abcdef1234567890abcdef12345678",
+"accepter_address": "0xabcdef1234567890abcdef1234567890abcdef12",
+"stake_amount": 100
+}' https://api.jollfi.com/api/v1/games/stake</code></pre>
+        <h4>Request Without API Key:</h4>
+        <pre><code>curl -X POST -H "Content-Type: application/json" \
+-d '{
+"requester_coin_id": "0x123",
+"accepter_coin_id": "0x456",
+"requester_address": "0x1234567890abcdef1234567890abcdef12345678",
+"accepter_address": "0xabcdef1234567890abcdef1234567890abcdef12",
+"stake_amount": 100
+}' https://api.jollfi.com/api/v1/games/stake</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "transaction_digest": "tx_1234567890",
+    "message": "Stake successful. 10% fee deducted from each player by blockchain."
+}</code></pre>
+        <h4>Errors:</h4>
+        <ul class="error-list">
+          <li>
+            <code>400</code>: Invalid request format, missing fields, or
+            negative stake amount.
+          </li>
+          <li><code>500</code>: Blockchain or database error.</li>
+        </ul>
+      </div>
+
+      <div class="endpoint-section">
+        <h3>
+          <span class="http-method post">POST</span> /api/v1/games/pay_winner
+        </h3>
+        <p>Processes payment to the winner on the Sui blockchain.</p>
+        <h4>Request:</h4>
+        <pre><code>curl -X POST -H "Content-Type: application/json" \
+-H "X-API-Key: public-jollfi-api-key-2025" \
+-d '{
+"requester_address": "0x1234567890abcdef1234567890abcdef12345678",
+"accepter_address": "0xabcdef1234567890abcdef1234567890abcdef12",
+"stake_amount": 100,
+"requester_score": 10,
+"accepter_score": 5
+}' https://api.jollfi.com/api/v1/games/pay_winner</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "transaction_digest": "tx_9876543210",
+    "message": "Winner payment processed by blockchain with all fees calculated automatically."
+}</code></pre>
+        <h4>Errors:</h4>
+        <ul class="error-list">
+          <li><code>400</code>: Invalid request format or missing fields.</li>
+          <li><code>500</code>: Blockchain or database error.</li>
+        </ul>
+      </div>
+
+      <div class="endpoint-section">
+        <h3>
+          <span class="http-method">GET</span> /api/v1/games/stakes/:address
+        </h3>
+        <p>Retrieves stake history for a Sui address (up to 50 records).</p>
+        <h4>Request:</h4>
+        <pre><code>curl https://api.jollfi.com/api/v1/games/stakes/0x1234567890abcdef1234567890abcdef12345678</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "stakes": [
+        {
+            "requester_coin_id": "0x123",
+            "accepter_coin_id": "0x456",
+            "requester_address": "0x1234567890abcdef1234567890abcdef12345678",
+            "accepter_address": "0xabcdef1234567890abcdef1234567890abcdef12",
+            "stake_amount": 100,
+            "status": "completed",
+            "timestamp": 1622134567,
+            "transaction_hash": "tx_1234567890"
+        }
+    ],
+    "count": 1
+}</code></pre>
+        <h4>Errors:</h4>
+        <ul class="error-list">
+          <li><code>400</code>: Invalid address format.</li>
+          <li><code>500</code>: Database error.</li>
+        </ul>
+      </div>
+
+      <div class="endpoint-section">
+        <h3>
+          <span class="http-method">GET</span> /api/v1/games/history/:address
+        </h3>
+        <p>Retrieves game history for a Sui address (up to 50 records).</p>
+        <h4>Request:</h4>
+        <pre><code>curl https://api.jollfi.com/api/v1/games/history/0x1234567890abcdef1234567890abcdef12345678</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "games": [
+        {
+            "requester_address": "0x1234567890abcdef1234567890abcdef12345678",
+            "accepter_address": "0xabcdef1234567890abcdef1234567890abcdef12",
+            "requester_score": 10,
+            "accepter_score": 5,
+            "stake_amount": 100,
+            "timestamp": 1622134567,
+            "transaction_hash": "tx_9876543210"
+        }
+    ],
+    "count": 1
+}</code></pre>
+        <h4>Errors:</h4>
+        <ul class="error-list">
+          <li><code>400</code>: Invalid address format.</li>
+          <li><code>500</code>: Database error.</li>
+        </ul>
+      </div>
+
+      <div class="endpoint-section">
+        <h3><span class="http-method">GET</span> /api/v1/games/stats</h3>
+        <p>Placeholder for game statistics.</p>
+        <h4>Request:</h4>
+        <pre><code>curl https://api.jollfi.com/api/v1/games/stats</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+    "success": true,
+    "message": "Game stats endpoint - to be implemented",
+    "data": {
+        "total_games": 0,
+        "total_stakes": 0,
+        "active_players": 0,
+        "last_updated": 1622134567
+    }
+}</code></pre>
+      </div>
+
+      ---
+
+      <h2>Notes</h2>
+      <ul>
+        <li><strong>Rate Limiting:</strong> 100 requests per minute per IP.</li>
+        <li><strong>CORS:</strong> Enabled for all origins.</li>
+        <li>
+          <strong>Swagger UI:</strong> Access at
+          <code>/swagger/index.html</code>.
+        </li>
+        <li>
+          <strong>Security:</strong> Use HTTPS to protect API key (if used).
+        </li>
+      </ul>
+
+      ---
+
+      <h2>API Requirements</h2>
+      <ul>
+        <li>The server must have a Sui wallet address.</li>
+        <li>The coin used for transactions must be Sui.</li>
+        <li>Players should have a funded Sui address.</li>
+      </ul>
+    </div>
+  </body>
+</html>
+```
